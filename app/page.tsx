@@ -1,101 +1,196 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import { GitHubConnect } from "@/components/github-connect"
+import { UserProfile } from "@/components/user-profile"
+import { StatsOverview } from "@/components/stats-overview"
+import { RepositoryList } from "@/components/repository-list"
+import { RepositoryAnalytics } from "@/components/repository-analytics"
+import { DataVisualizations } from "@/components/data-visualizations"
+import { AIInsights } from "@/components/ai-insights"
+import { RepositorySummaries } from "@/components/repository-summaries"
+import { DashboardHeader } from "@/components/dashboard-header"
+import { RecruiterToggle } from "@/components/recruiter-toggle"
+import { RecruiterDashboard } from "@/components/recruiter-dashboard"
+import { RecruiterAIInsights } from "@/components/recruiter-ai-insights"
+import { ExportPortfolio } from "@/components/export-portfolio"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { GitHubUser, GitHubRepo } from "@/lib/github"
+
+interface AnalysisData {
+  user: GitHubUser
+  repos: GitHubRepo[]
+  languageStats: Array<{
+    language: string
+    bytes: number
+    percentage: number
+  }>
+  activityStats: {
+    totalRepos: number
+    recentlyUpdated: number
+    activeRepos: number
+    totalStars: number
+    totalForks: number
+    averageStars: number
+  }
+}
+
+export default function HomePage() {
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<AnalysisData | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [credentials, setCredentials] = useState<{ username: string; token?: string } | null>(null)
+  const [isRecruiterView, setIsRecruiterView] = useState(false)
+
+  const handleConnect = async (username: string, token?: string) => {
+    setCredentials({ username, token })
+    await fetchData(username, token)
+  }
+
+  const fetchData = async (username: string, token?: string) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      // Fetch user data
+      const userParams = new URLSearchParams({ username })
+      if (token) userParams.append("token", token)
+
+      const userResponse = await fetch(`/api/github/user?${userParams}`)
+      if (!userResponse.ok) throw new Error("Failed to fetch user data")
+      const user = await userResponse.json()
+
+      // Fetch repository data
+      const repoParams = new URLSearchParams({ username })
+      if (token) repoParams.append("token", token)
+
+      const repoResponse = await fetch(`/api/github/repos?${repoParams}`)
+      if (!repoResponse.ok) throw new Error("Failed to fetch repository data")
+      const repoData = await repoResponse.json()
+
+      setData({
+        user,
+        repos: repoData.repos,
+        languageStats: repoData.languageStats,
+        activityStats: repoData.activityStats,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRefresh = () => {
+    if (credentials) {
+      fetchData(credentials.username, credentials.token)
+    }
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen">
+        <GitHubConnect onConnect={handleConnect} loading={loading} />
+        {error && (
+          <div className="fixed bottom-4 right-4 bg-destructive text-destructive-foreground p-4 rounded-lg">
+            {error}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto p-4 space-y-6">
+        <div className="flex items-center justify-between">
+          <DashboardHeader username={data.user.login} onRefresh={handleRefresh} loading={loading} />
+          <RecruiterToggle isRecruiterView={isRecruiterView} onToggle={setIsRecruiterView} />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <UserProfile user={data.user} />
+
+        <StatsOverview activityStats={data.activityStats} />
+
+        {isRecruiterView ? (
+          <Tabs defaultValue="assessment" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="assessment">Assessment</TabsTrigger>
+              <TabsTrigger value="projects">Top Projects</TabsTrigger>
+              <TabsTrigger value="ai-recruiter">AI Analysis</TabsTrigger>
+              <TabsTrigger value="export">Export & Share</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="assessment" className="space-y-6">
+              <RecruiterDashboard
+                user={data.user}
+                repos={data.repos}
+                languageStats={data.languageStats}
+                activityStats={data.activityStats}
+              />
+            </TabsContent>
+
+            <TabsContent value="projects" className="space-y-6">
+              <RepositoryList repos={data.repos} limit={8} />
+            </TabsContent>
+
+            <TabsContent value="ai-recruiter" className="space-y-6">
+              <RecruiterAIInsights
+                user={data.user}
+                repos={data.repos}
+                languageStats={data.languageStats}
+                activityStats={data.activityStats}
+              />
+            </TabsContent>
+
+            <TabsContent value="export" className="space-y-6">
+              <ExportPortfolio
+                user={data.user}
+                repos={data.repos}
+                languageStats={data.languageStats}
+                activityStats={data.activityStats}
+              />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <Tabs defaultValue="repositories" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="repositories">Repositories</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="visualizations">Charts</TabsTrigger>
+              <TabsTrigger value="ai-insights">AI Insights</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="repositories" className="space-y-6">
+              <RepositoryList repos={data.repos} />
+            </TabsContent>
+
+            <TabsContent value="analytics" className="space-y-6">
+              <RepositoryAnalytics repos={data.repos} languageStats={data.languageStats} />
+            </TabsContent>
+
+            <TabsContent value="visualizations" className="space-y-6">
+              <DataVisualizations repos={data.repos} languageStats={data.languageStats} />
+            </TabsContent>
+
+            <TabsContent value="ai-insights" className="space-y-6">
+              <AIInsights
+                user={data.user}
+                repos={data.repos}
+                languageStats={data.languageStats}
+                activityStats={data.activityStats}
+              />
+              <RepositorySummaries repos={data.repos} />
+            </TabsContent>
+          </Tabs>
+        )}
+
+        {error && (
+          <div className="fixed bottom-4 right-4 bg-destructive text-destructive-foreground p-4 rounded-lg">
+            {error}
+          </div>
+        )}
+      </div>
     </div>
-  );
+  )
 }
