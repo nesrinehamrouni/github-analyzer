@@ -27,9 +27,17 @@ export function RepositorySummaries({ repos }: RepositorySummariesProps) {
         body: JSON.stringify({ repo }),
       })
 
-      if (!response.ok) throw new Error("Failed to generate summary")
-
       const data = await response.json()
+
+      if (!response.ok) {
+        if (data.fallback && data.summary) {
+          // Use fallback summary for quota errors
+          setSummaries((prev) => ({ ...prev, [repo.id]: data.summary }))
+          return
+        }
+        throw new Error(data.error || "Failed to generate summary")
+      }
+
       setSummaries((prev) => ({ ...prev, [repo.id]: data.summary }))
     } catch (error) {
       console.error("Failed to generate summary:", error)

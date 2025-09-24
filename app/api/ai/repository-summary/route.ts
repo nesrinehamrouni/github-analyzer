@@ -1,6 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,15 +23,76 @@ Based on the repository metadata, provide:
 
 Keep it concise and professional. Focus on the project's purpose and value.`
 
-    const { text } = await generateText({
-      model: openai("gpt-4o-mini"),
-      prompt,
-      maxTokens: 300,
+    // Use direct HTTP request to Google Gemini API
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-goog-api-key': process.env.GOOGLE_API_KEY!,
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }]
+      })
     })
+
+    if (!response.ok) {
+      throw new Error(`Google API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const text = data.candidates[0].content.parts[0].text
 
     return NextResponse.json({ summary: text })
   } catch (error) {
     console.error("Repository summary error:", error)
+    
+    // Check if it's a quota/billing error
+    if (error instanceof Error && error.message.includes("quota")) {
+      return NextResponse.json({ 
+        error: "OpenAI API quota exceeded. Please check your billing details or try again later.",
+        fallback: true,
+        summary: generateFallbackSummary(repo)
+      }, { status: 429 })
+    }
+    
     return NextResponse.json({ error: "Failed to generate repository summary" }, { status: 500 })
   }
+}
+
+function generateFallbackSummary(repo: any) {
+  const stars = repo.stargazers_count
+  const forks = repo.forks_count
+  const language = repo.language || "Unknown"
+  const size = repo.size
+  const createdDate = new Date(repo.created_at)
+  const updatedDate = new Date(repo.updated_at)
+  const isRecent = (Date.now() - updatedDate.getTime()) < (30 * 24 * 60 * 60 * 1000) // 30 days
+  
+  let summary = `This ${language} repository`
+  
+  if (repo.description) {
+    summary += ` (${repo.description})`
+  }
+  
+  summary += ` has ${stars} stars and ${forks} forks. `
+  
+  if (stars > 100) {
+    summary += "It appears to be a popular project with significant community interest. "
+  } else if (stars > 10) {
+    summary += "It shows moderate community engagement. "
+  } else {
+    summary += "It's a newer or specialized project. "
+  }
+  
+  if (isRecent) {
+    summary += "The repository has been recently updated, indicating active development."
+  } else {
+    summary += "The repository may be in maintenance mode or completed."
+  }
+  
+  return summary
 }

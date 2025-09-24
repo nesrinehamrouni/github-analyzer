@@ -1,6 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,15 +45,41 @@ Please provide a comprehensive analysis including:
 
 Keep the analysis professional, constructive, and insightful. Focus on actionable insights.`
 
-    const { text } = await generateText({
-      model: openai("gpt-4o-mini"),
-      prompt,
-      maxTokens: 1000,
+    // Use direct HTTP request to Google Gemini API
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-goog-api-key': process.env.GOOGLE_API_KEY!,
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }]
+      })
     })
+
+    if (!response.ok) {
+      throw new Error(`Google API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const text = data.candidates[0].content.parts[0].text
 
     return NextResponse.json({ analysis: text })
   } catch (error) {
     console.error("AI analysis error:", error)
+    
+    // Check if it's a quota/billing error
+    if (error instanceof Error && error.message.includes("quota")) {
+      return NextResponse.json({ 
+        error: "OpenAI API quota exceeded. Please check your billing details or try again later.",
+        fallback: true 
+      }, { status: 429 })
+    }
+    
     return NextResponse.json({ error: "Failed to generate AI analysis" }, { status: 500 })
   }
 }

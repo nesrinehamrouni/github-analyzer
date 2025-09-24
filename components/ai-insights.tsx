@@ -39,15 +39,45 @@ export function AIInsights({ user, repos, languageStats, activityStats }: AIInsi
         body: JSON.stringify({ user, repos, languageStats, activityStats }),
       })
 
-      if (!response.ok) throw new Error("Failed to generate analysis")
-
       const data = await response.json()
+
+      if (!response.ok) {
+        if (data.fallback) {
+          // Show fallback content for quota errors
+          setAnalysis(generateFallbackAnalysis())
+          return
+        }
+        throw new Error(data.error || "Failed to generate analysis")
+      }
+
       setAnalysis(data.analysis)
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
       setLoading(false)
     }
+  }
+
+  const generateFallbackAnalysis = () => {
+    const topLanguage = languageStats[0]?.language || "Unknown"
+    const totalStars = activityStats.totalStars
+    const totalRepos = activityStats.totalRepos
+    const recentActivity = activityStats.recentlyUpdated
+
+    return `1. Developer Profile Summary
+This developer shows a strong focus on ${topLanguage} development with ${totalRepos} public repositories and ${totalStars} total stars. The portfolio demonstrates consistent activity with ${recentActivity} repositories updated recently.
+
+2. Technical Strengths
+Primary expertise in ${topLanguage} with a diverse repository portfolio. The developer shows good project organization and maintains active repositories, indicating strong development practices and commitment to open source.
+
+3. Portfolio Highlights
+Notable achievements include ${totalStars} total stars across all repositories, demonstrating community recognition. The ${recentActivity} recently updated repositories show ongoing development activity and project maintenance.
+
+4. Growth Opportunities
+Consider expanding into additional programming languages to diversify technical skills. Focus on creating more detailed README files and documentation to improve project discoverability and community engagement.
+
+5. Community Impact
+With ${totalStars} stars and ${totalRepos} repositories, this developer has made a meaningful contribution to the open source community. The active maintenance of repositories shows dedication to long-term project sustainability.`
   }
 
   // Auto-generate analysis on component mount
@@ -118,6 +148,11 @@ export function AIInsights({ user, repos, languageStats, activityStats }: AIInsi
         {error && (
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
             <p className="text-destructive text-sm">{error}</p>
+            {error.includes("quota") && (
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Tip: Check your OpenAI billing at <a href="https://platform.openai.com/account/billing" target="_blank" rel="noopener noreferrer" className="underline">platform.openai.com/account/billing</a>
+              </p>
+            )}
           </div>
         )}
 

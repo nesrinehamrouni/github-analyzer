@@ -64,19 +64,19 @@ export function StarsChart({ repos }: StarsChartProps) {
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topRepos} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis
                 dataKey="name"
-                stroke="hsl(var(--muted-foreground))"
+                stroke="var(--muted-foreground)"
                 fontSize={12}
                 angle={-45}
                 textAnchor="end"
                 height={80}
               />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+              <YAxis stroke="var(--muted-foreground)" fontSize={12} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="stars" fill="hsl(var(--chart-2))" name="Stars" radius={[2, 2, 0, 0]} />
-              <Bar dataKey="forks" fill="hsl(var(--chart-3))" name="Forks" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="stars" fill="var(--chart-2)" name="Stars" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="forks" fill="var(--chart-3)" name="Forks" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

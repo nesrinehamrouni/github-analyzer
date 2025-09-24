@@ -78,25 +78,25 @@ export function ActivityChart({ repos }: ActivityChartProps) {
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={12} />
+              <YAxis stroke="var(--muted-foreground)" fontSize={12} />
               <Tooltip content={<CustomTooltip />} />
               <Line
                 type="monotone"
                 dataKey="created"
-                stroke="hsl(var(--primary))"
+                stroke="var(--primary)"
                 strokeWidth={2}
                 name="Created"
-                dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                dot={{ fill: "var(--primary)", strokeWidth: 2, r: 4 }}
               />
               <Line
                 type="monotone"
                 dataKey="updated"
-                stroke="hsl(var(--chart-2))"
+                stroke="var(--chart-2)"
                 strokeWidth={2}
                 name="Updated"
-                dot={{ fill: "hsl(var(--chart-2))", strokeWidth: 2, r: 4 }}
+                dot={{ fill: "var(--chart-2)", strokeWidth: 2, r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>

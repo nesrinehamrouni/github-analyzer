@@ -32,6 +32,9 @@ export interface GitHubRepo {
   pushed_at: string
   topics: string[]
   visibility: string
+  owner: {
+    login: string
+  }
 }
 
 export interface LanguageStats {
@@ -85,6 +88,42 @@ export class GitHubAPI {
   async getRepoCommits(owner: string, repo: string, since?: string) {
     const sinceParam = since ? `?since=${since}` : ""
     return this.fetch(`/repos/${owner}/${repo}/commits${sinceParam}`)
+  }
+
+  async getUserContributions(username: string) {
+    // Get user's repositories
+    const repos = await this.getUserRepos(username)
+    
+    // Get commit data for the last year for each repository
+    const oneYearAgo = new Date()
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+    const since = oneYearAgo.toISOString()
+    
+    const contributionData: Record<string, number> = {}
+    
+    // Process repositories in batches to avoid rate limits
+    const batchSize = 5
+    for (let i = 0; i < repos.length; i += batchSize) {
+      const batch = repos.slice(i, i + batchSize)
+      
+      await Promise.all(
+        batch.map(async (repo) => {
+          try {
+            const commits = await this.getRepoCommits(repo.owner?.login || username, repo.name, since)
+            
+            // Count commits by date
+            commits.forEach((commit: any) => {
+              const commitDate = new Date(commit.commit.author.date).toISOString().split('T')[0]
+              contributionData[commitDate] = (contributionData[commitDate] || 0) + 1
+            })
+          } catch (error) {
+            console.warn(`Failed to get commits for ${repo.name}:`, error)
+          }
+        })
+      )
+    }
+    
+    return contributionData
   }
 }
 
