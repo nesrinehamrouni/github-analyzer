@@ -3,77 +3,49 @@
 @tailwind utilities;
 
 :root {
-  /* Updated theme to match GitHub's dark theme */
-  --background: #000000; /* Pure black background like GitHub */
+  --background: #000000;
   --foreground: #fafafa;
-  --card: #0d1117; /* Slightly lighter than background for cards */
+  --card: #0d1117;
   --card-foreground: #fafafa;
   --popover: #0d1117;
   --popover-foreground: #fafafa;
   --primary: #0969da;
   --primary-foreground: #fafafa;
-  --secondary: #21262d; /* Dark gray for secondary elements */
+  --secondary: #21262d;
   --secondary-foreground: #e6edf3;
-  --muted: #161b22; /* Very dark gray for muted elements */
+  --muted: #161b22;
   --muted-foreground: #8b949e;
   --accent: #21262d;
   --accent-foreground: #fafafa;
   --destructive: #da3633;
   --destructive-foreground: #fafafa;
-  --border: #30363d; /* Dark gray borders */
-  --input: #0d1117; /* Dark input backgrounds */
+  --border: #30363d;
+  --input: #0d1117;
   --ring: #0969da;
-  --chart-1: #0969da;
-  --chart-2: #1f883d;
-  --chart-3: #8250df;
-  --chart-4: #a40e26;
-  --chart-5: #bf8700;
   --radius: 0.5rem;
-  --sidebar: #010409; /* Very dark sidebar */
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #0969da;
-  --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #161b22;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #30363d;
-  --sidebar-ring: #0969da;
 }
 
 .dark {
-  --background: #000000; /* Pure black background like GitHub */
+  --background: #000000;
   --foreground: #fafafa;
-  --card: #0d1117; /* Slightly lighter than background for cards */
+  --card: #0d1117;
   --card-foreground: #fafafa;
   --popover: #0d1117;
   --popover-foreground: #fafafa;
   --primary: #0969da;
   --primary-foreground: #fafafa;
-  --secondary: #21262d; /* Dark gray for secondary elements */
+  --secondary: #21262d;
   --secondary-foreground: #e6edf3;
-  --muted: #161b22; /* Very dark gray for muted elements */
+  --muted: #161b22;
   --muted-foreground: #8b949e;
   --accent: #21262d;
   --accent-foreground: #fafafa;
   --destructive: #da3633;
   --destructive-foreground: #fafafa;
-  --border: #30363d; /* Dark gray borders */
-  --input: #0d1117; /* Dark input backgrounds */
+  --border: #30363d;
+  --input: #0d1117;
   --ring: #0969da;
-  --chart-1: #0969da;
-  --chart-2: #1f883d;
-  --chart-3: #8250df;
-  --chart-4: #a40e26;
-  --chart-5: #bf8700;
-  --sidebar: #010409; /* Very dark sidebar */
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #0969da;
-  --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #161b22;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #30363d;
-  --sidebar-ring: #0969da;
 }
-
 
 @layer base {
   * {
