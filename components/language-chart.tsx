@@ -94,7 +94,7 @@ export function LanguageChart({ languageStats }: LanguageChartProps) {
                 height={36}
                 formatter={(value, entry) => (
                   <span className="text-sm" style={{ color: entry.color }}>
-                    {entry.payload.language}
+                    {entry.payload?.language || value}
                   </span>
                 )}
               />
