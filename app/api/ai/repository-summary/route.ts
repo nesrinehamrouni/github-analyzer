@@ -1,11 +1,28 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+interface RepoData {
+  name: string
+  description?: string
+  language?: string
+  stargazers_count: number
+  forks_count: number
+  size: number
+  created_at: string
+  updated_at: string
+  topics?: string[]
+}
+
 export async function POST(request: NextRequest) {
-  let repo: any = null
+  let repo: RepoData | null = null
   
   try {
     const requestData = await request.json()
     repo = requestData.repo
+
+    // Validate repo data
+    if (!repo || !repo.name) {
+      return NextResponse.json({ error: "Repository data is required" }, { status: 400 })
+    }
 
     const prompt = `Analyze this GitHub repository and provide a concise summary:
 
@@ -47,6 +64,12 @@ Keep it concise and professional. Focus on the project's purpose and value.`
     }
 
     const data = await response.json()
+    
+    // Validate API response structure
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts) {
+      throw new Error("Invalid API response structure")
+    }
+    
     const text = data.candidates[0].content.parts[0].text
 
     return NextResponse.json({ summary: text })
@@ -54,9 +77,9 @@ Keep it concise and professional. Focus on the project's purpose and value.`
     console.error("Repository summary error:", error)
     
     // Check if it's a quota/billing error
-    if (error instanceof Error && error.message.includes("quota") && repo) {
+    if (error instanceof Error && (error.message.includes("quota") || error.message.includes("billing")) && repo) {
       return NextResponse.json({ 
-        error: "OpenAI API quota exceeded. Please check your billing details or try again later.",
+        error: "Google API quota exceeded. Please check your billing details or try again later.",
         fallback: true,
         summary: generateFallbackSummary(repo)
       }, { status: 429 })
@@ -66,12 +89,10 @@ Keep it concise and professional. Focus on the project's purpose and value.`
   }
 }
 
-function generateFallbackSummary(repo: any) {
+function generateFallbackSummary(repo: RepoData) {
   const stars = repo.stargazers_count
   const forks = repo.forks_count
   const language = repo.language || "Unknown"
-  const size = repo.size
-  const createdDate = new Date(repo.created_at)
   const updatedDate = new Date(repo.updated_at)
   const isRecent = (Date.now() - updatedDate.getTime()) < (30 * 24 * 60 * 60 * 1000) // 30 days
   

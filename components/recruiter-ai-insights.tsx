@@ -53,7 +53,7 @@ export function RecruiterAIInsights({ user, repos, languageStats, activityStats 
 
   useEffect(() => {
     generateRecruiterAnalysis()
-  }, [])
+  }, [user, repos, languageStats, activityStats])
 
   const parseRecruiterAnalysis = (text: string) => {
     const sections = text.split(/\d+\.\s+\*\*|\*\*/).filter(Boolean)

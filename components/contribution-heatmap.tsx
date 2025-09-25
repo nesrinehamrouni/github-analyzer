@@ -102,7 +102,7 @@ export function ContributionHeatmap({ repos, contributions }: ContributionHeatma
         <div className="space-y-3">
           {/* Month labels - GitHub style */}
           <div className="flex relative text-xs text-muted-foreground">
-            {monthPositions.map(({ month, position }, index) => (
+            {monthPositions.map(({ month, position }) => (
               <span 
                 key={month} 
                 className="absolute"

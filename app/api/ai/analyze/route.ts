@@ -17,8 +17,24 @@ interface ActivityStats {
 export async function POST(request: NextRequest) {
   try {
     const { user, repos, languageStats, activityStats }: {
-      user: any
-      repos: any[]
+      user: {
+        name?: string
+        login: string
+        bio?: string
+        location?: string
+        company?: string
+        public_repos: number
+        followers: number
+        following: number
+        created_at: string
+      }
+      repos: Array<{
+        name: string
+        stargazers_count: number
+        forks_count: number
+        language?: string
+        description?: string
+      }>
       languageStats: LanguageStats[]
       activityStats: ActivityStats
     } = await request.json()

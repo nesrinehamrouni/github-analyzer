@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     // Get language data for each repo (limit to top 10 to avoid rate limits)
     const topRepos = repos.slice(0, 10)
-    const languageData: Record<string, any> = {}
+    const languageData: Record<string, Record<string, number>> = {}
 
     for (const repo of topRepos) {
       try {

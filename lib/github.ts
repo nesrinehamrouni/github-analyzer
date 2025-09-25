@@ -112,7 +112,7 @@ export class GitHubAPI {
             const commits = await this.getRepoCommits(repo.owner?.login || username, repo.name, since)
             
             // Count commits by date
-            commits.forEach((commit: any) => {
+            commits.forEach((commit: { commit: { author: { date: string } } }) => {
               const commitDate = new Date(commit.commit.author.date).toISOString().split('T')[0]
               contributionData[commitDate] = (contributionData[commitDate] || 0) + 1
             })
@@ -152,7 +152,6 @@ export function getActivityStats(repos: GitHubRepo[]) {
   const now = new Date()
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
   const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000)
-  const oneYearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
 
   const recentlyUpdated = repos.filter((repo) => new Date(repo.updated_at) > thirtyDaysAgo).length
 

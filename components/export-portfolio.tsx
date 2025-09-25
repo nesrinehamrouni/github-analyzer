@@ -274,7 +274,7 @@ export function ExportPortfolio({ user, repos, languageStats, activityStats }: E
           <div className="flex items-start gap-3">
             <FileText className="h-5 w-5 text-primary mt-0.5" />
             <div>
-              <h4 className="font-medium text-sm">What's included in exports:</h4>
+              <h4 className="font-medium text-sm">What&apos;s included in exports:</h4>
               <ul className="text-xs text-muted-foreground mt-1 space-y-1">
                 <li>• AI-generated project summaries and elevator pitch</li>
                 <li>• Technical skills breakdown and experience assessment</li>

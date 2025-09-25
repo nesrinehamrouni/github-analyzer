@@ -83,7 +83,7 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
   // Auto-generate analysis on component mount
   useEffect(() => {
     generateAnalysis()
-  }, [])
+  }, [user, repos, languageStats, activityStats])
 
   const parseMarkdown = (text: string) => {
     return text

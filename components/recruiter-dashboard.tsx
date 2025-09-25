@@ -27,7 +27,6 @@ interface RecruiterDashboardProps {
 
 export function RecruiterDashboard({ user, repos, languageStats, activityStats }: RecruiterDashboardProps) {
   const [techFilter, setTechFilter] = useState<string>("all")
-  const [projectType, setProjectType] = useState<string>("all")
 
   // Calculate project impact scores
   const calculateImpactScore = (repo: GitHubRepo) => {
@@ -225,11 +224,6 @@ export function RecruiterDashboard({ user, repos, languageStats, activityStats }
                           </Badge>
                         ))}
                       </>
-                    )}
-                    {repo.has_pages && (
-                      <Badge variant="outline" className="text-xs">
-                        Live Demo
-                      </Badge>
                     )}
                     {repo.stargazers_count > 10 && (
                       <Badge variant="outline" className="text-xs">

@@ -51,7 +51,7 @@ export function LanguageChart({ languageStats }: LanguageChartProps) {
     })
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { language: string; percentage: number; bytes: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

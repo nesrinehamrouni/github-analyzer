@@ -21,7 +21,7 @@ export function StarsChart({ repos }: StarsChartProps) {
       language: repo.language,
     }))
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ value: number; color: string; payload: { name: string; fullName: string; stars: number; forks: number; language?: string } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
