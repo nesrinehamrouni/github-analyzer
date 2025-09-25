@@ -92,9 +92,9 @@ export function LanguageChart({ languageStats }: LanguageChartProps) {
               <Legend
                 verticalAlign="bottom"
                 height={36}
-                formatter={(value, entry) => (
-                  <span className="text-sm" style={{ color: entry.color }}>
-                    {entry.payload?.language || value}
+                formatter={(value) => (
+                  <span className="text-sm">
+                    {value}
                   </span>
                 )}
               />
