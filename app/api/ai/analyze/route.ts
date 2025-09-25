@@ -1,8 +1,27 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+interface LanguageStats {
+  language: string
+  bytes: number
+  percentage: number
+}
+
+interface ActivityStats {
+  totalRepos: number
+  totalStars: number
+  totalForks: number
+  recentlyUpdated: number
+  activeRepos: number
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { user, repos, languageStats, activityStats } = await request.json()
+    const { user, repos, languageStats, activityStats }: {
+      user: any
+      repos: any[]
+      languageStats: LanguageStats[]
+      activityStats: ActivityStats
+    } = await request.json()
 
     const prompt = `Analyze this GitHub portfolio and provide insights:
 

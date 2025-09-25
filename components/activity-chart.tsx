@@ -7,10 +7,18 @@ interface ActivityChartProps {
   repos: GitHubRepo[]
 }
 
+interface MonthlyData {
+  month: string
+  monthKey: string
+  created: number
+  updated: number
+  stars: number
+}
+
 export function ActivityChart({ repos }: ActivityChartProps) {
   // Group repositories by month for the last 12 months
-  const generateMonthlyData = () => {
-    const months = []
+  const generateMonthlyData = (): MonthlyData[] => {
+    const months: MonthlyData[] = []
     const now = new Date()
 
     for (let i = 11; i >= 0; i--) {
