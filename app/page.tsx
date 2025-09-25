@@ -38,21 +38,20 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<AnalysisData | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [credentials, setCredentials] = useState<{ username: string; token?: string } | null>(null)
+  const [credentials, setCredentials] = useState<{ username: string } | null>(null)
 
-  const handleConnect = async (username: string, token?: string) => {
-    setCredentials({ username, token })
-    await fetchData(username, token)
+  const handleConnect = async (username: string) => {
+    setCredentials({ username })
+    await fetchData(username)
   }
 
-  const fetchData = async (username: string, token?: string) => {
+  const fetchData = async (username: string) => {
     setLoading(true)
     setError(null)
 
     try {
       // Fetch user data
       const userParams = new URLSearchParams({ username })
-      if (token) userParams.append("token", token)
 
       const userResponse = await fetch(`/api/github/user?${userParams}`)
       if (!userResponse.ok) throw new Error("Failed to fetch user data")
@@ -60,7 +59,6 @@ export default function HomePage() {
 
       // Fetch repository data
       const repoParams = new URLSearchParams({ username })
-      if (token) repoParams.append("token", token)
 
       const repoResponse = await fetch(`/api/github/repos?${repoParams}`)
       if (!repoResponse.ok) throw new Error("Failed to fetch repository data")
@@ -81,7 +79,7 @@ export default function HomePage() {
 
   const handleRefresh = () => {
     if (credentials) {
-      fetchData(credentials.username, credentials.token)
+      fetchData(credentials.username)
     }
   }
 

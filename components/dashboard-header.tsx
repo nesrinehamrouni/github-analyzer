@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { RefreshCw, Settings, Download } from "lucide-react"
+import { RefreshCw } from "lucide-react"
 
 interface DashboardHeaderProps {
   username: string
@@ -20,14 +20,6 @@ export function DashboardHeader({ username, onRefresh, loading }: DashboardHeade
         <Button variant="outline" size="sm" onClick={onRefresh} disabled={loading}>
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
           Refresh
-        </Button>
-        <Button variant="outline" size="sm">
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
-        <Button variant="outline" size="sm">
-          <Settings className="h-4 w-4 mr-2" />
-          Settings
         </Button>
       </div>
     </div>

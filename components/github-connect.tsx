@@ -10,18 +10,17 @@ import { Label } from "@/components/ui/label"
 import { GitBranch, Github } from "lucide-react"
 
 interface GitHubConnectProps {
-  onConnect: (username: string, token?: string) => void
+  onConnect: (username: string) => void
   loading?: boolean
 }
 
 export function GitHubConnect({ onConnect, loading }: GitHubConnectProps) {
   const [username, setUsername] = useState("")
-  const [token, setToken] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (username.trim()) {
-      onConnect(username.trim(), token.trim() || undefined)
+      onConnect(username.trim())
     }
   }
 
@@ -51,19 +50,6 @@ export function GitHubConnect({ onConnect, loading }: GitHubConnectProps) {
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="token">Personal Access Token (Optional)</Label>
-              <Input
-                id="token"
-                type="password"
-                placeholder="ghp_xxxxxxxxxxxx"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Optional: Provide a token for higher rate limits and private repos
-              </p>
             </div>
             <Button type="submit" className="w-full" disabled={loading || !username.trim()}>
               {loading ? (

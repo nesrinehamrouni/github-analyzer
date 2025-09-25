@@ -8,8 +8,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "GitHub Portfolio Analyzer",
-  description: "Analyze your GitHub repositories with AI-powered insights and visualizations",
-  generator: "v0.app",
+  description: "Analyze your GitHub repositories with AI-powered insights and visualizations"
 }
 
 export default function RootLayout({

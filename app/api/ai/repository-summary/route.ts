@@ -1,8 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
+  let repo: any = null
+  
   try {
-    const { repo } = await request.json()
+    const requestData = await request.json()
+    repo = requestData.repo
 
     const prompt = `Analyze this GitHub repository and provide a concise summary:
 
@@ -51,7 +54,7 @@ Keep it concise and professional. Focus on the project's purpose and value.`
     console.error("Repository summary error:", error)
     
     // Check if it's a quota/billing error
-    if (error instanceof Error && error.message.includes("quota")) {
+    if (error instanceof Error && error.message.includes("quota") && repo) {
       return NextResponse.json({ 
         error: "OpenAI API quota exceeded. Please check your billing details or try again later.",
         fallback: true,

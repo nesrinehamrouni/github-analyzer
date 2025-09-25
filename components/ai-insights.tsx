@@ -25,7 +25,7 @@ interface AIInsightsProps {
 
 export function AIInsights({ user, repos, languageStats, activityStats }: AIInsightsProps) {
   const [analysis, setAnalysis] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true) // Start with loading true
   const [error, setError] = useState<string | null>(null)
 
   const generateAnalysis = async () => {
@@ -85,6 +85,14 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
     generateAnalysis()
   }, [])
 
+  const parseMarkdown = (text: string) => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
+      .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
+      .replace(/`(.*?)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>') // Inline code
+      .replace(/\n/g, '<br />') // Line breaks
+  }
+
   const parseAnalysis = (text: string) => {
     const sections = text.split(/\d+\.\s+/).filter(Boolean)
     const parsed = {
@@ -136,11 +144,30 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
         </div>
       </CardHeader>
       <CardContent>
-        {loading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Sparkles className="h-4 w-4 animate-pulse" />
-              <span>AI is analyzing your portfolio...</span>
+        {loading && !analysis && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-center py-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Sparkles className="h-4 w-4 animate-pulse" />
+                <span>AI is analyzing your portfolio...</span>
+              </div>
+            </div>
+            
+            {/* Skeleton loading content */}
+            <div className="space-y-6">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 bg-muted rounded animate-pulse" />
+                    <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-3 w-full bg-muted rounded animate-pulse" />
+                    <div className="h-3 w-4/5 bg-muted rounded animate-pulse" />
+                    <div className="h-3 w-3/4 bg-muted rounded animate-pulse" />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -164,7 +191,10 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
                   <User className="h-4 w-4 text-primary" />
                   <h3 className="font-semibold">Developer Profile</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{insights.summary}</p>
+                <p 
+                  className="text-sm text-muted-foreground leading-relaxed" 
+                  dangerouslySetInnerHTML={{ __html: parseMarkdown(insights.summary) }}
+                />
               </div>
             )}
 
@@ -174,7 +204,10 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
                   <TrendingUp className="h-4 w-4 text-chart-2" />
                   <h3 className="font-semibold">Technical Strengths</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{insights.strengths}</p>
+                <p 
+                  className="text-sm text-muted-foreground leading-relaxed" 
+                  dangerouslySetInnerHTML={{ __html: parseMarkdown(insights.strengths) }}
+                />
               </div>
             )}
 
@@ -184,7 +217,10 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
                   <Sparkles className="h-4 w-4 text-chart-3" />
                   <h3 className="font-semibold">Portfolio Highlights</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{insights.highlights}</p>
+                <p 
+                  className="text-sm text-muted-foreground leading-relaxed" 
+                  dangerouslySetInnerHTML={{ __html: parseMarkdown(insights.highlights) }}
+                />
               </div>
             )}
 
@@ -194,7 +230,10 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
                   <Target className="h-4 w-4 text-chart-4" />
                   <h3 className="font-semibold">Growth Opportunities</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{insights.opportunities}</p>
+                <p 
+                  className="text-sm text-muted-foreground leading-relaxed" 
+                  dangerouslySetInnerHTML={{ __html: parseMarkdown(insights.opportunities) }}
+                />
               </div>
             )}
 
@@ -204,7 +243,10 @@ With ${totalStars} stars and ${totalRepos} repositories, this developer has made
                   <Users className="h-4 w-4 text-chart-5" />
                   <h3 className="font-semibold">Community Impact</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{insights.impact}</p>
+                <p 
+                  className="text-sm text-muted-foreground leading-relaxed" 
+                  dangerouslySetInnerHTML={{ __html: parseMarkdown(insights.impact) }}
+                />
               </div>
             )}
           </div>
