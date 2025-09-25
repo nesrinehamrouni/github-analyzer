@@ -43,6 +43,13 @@ const config: Config = {
         border: 'var(--border)',
         input: 'var(--input)',
         ring: 'var(--ring)',
+        chart: {
+          '1': '#0969da',
+          '2': '#1f883d',
+          '3': '#8250df',
+          '4': '#a40e26',
+          '5': '#bf8700'
+        }
       },
       borderRadius: {
         lg: 'var(--radius)',
