@@ -11,7 +11,6 @@ import { AIInsights } from "@/components/ai-insights"
 import { RepositorySummaries } from "@/components/repository-summaries"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { RecruiterDashboard } from "@/components/recruiter-dashboard"
-import { RecruiterAIInsights } from "@/components/recruiter-ai-insights"
 import { ExportPortfolio } from "@/components/export-portfolio"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { GitHubUser, GitHubRepo } from "@/lib/github"
@@ -139,12 +138,6 @@ export default function HomePage() {
 
           <TabsContent value="recruiter-assessment" className="space-y-6">
             <RecruiterDashboard
-              user={data.user}
-              repos={data.repos}
-              languageStats={data.languageStats}
-              activityStats={data.activityStats}
-            />
-            <RecruiterAIInsights
               user={data.user}
               repos={data.repos}
               languageStats={data.languageStats}
